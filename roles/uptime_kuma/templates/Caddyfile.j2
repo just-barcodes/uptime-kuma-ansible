@@ -1,0 +1,28 @@
+# Managed by Ansible — edits will be overwritten on next apply.
+
+{
+  email {{ uptime_kuma_letsencrypt_email }}
+  # Caddy defaults are already strong: HSTS, modern TLS, auto HTTP→HTTPS redirect.
+}
+
+{{ uptime_kuma_domain }} {
+  encode zstd gzip
+
+  # Security headers
+  header {
+    Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options    "nosniff"
+    X-Frame-Options           "SAMEORIGIN"
+    Referrer-Policy           "strict-origin-when-cross-origin"
+    # Kuma needs inline styles/scripts; keep CSP loose or Kuma's UI breaks.
+    -Server
+  }
+
+  reverse_proxy uptime-kuma:3001 {
+    # Kuma uses WebSockets for live updates
+    header_up Host {host}
+    header_up X-Real-IP {remote}
+    header_up X-Forwarded-For {remote}
+    header_up X-Forwarded-Proto {scheme}
+  }
+}

@@ -1,0 +1,20 @@
+---
+# Required (no default — fail if unset)
+# uptime_kuma_domain: status.example.com
+# uptime_kuma_letsencrypt_email: ops@example.com
+
+# Container images
+uptime_kuma_image: "louislam/uptime-kuma:2"
+uptime_kuma_caddy_image: "caddy:2-alpine"
+
+# Filesystem
+uptime_kuma_install_dir: "/opt/uptime-kuma"
+
+# Docker named volumes
+uptime_kuma_data_volume: "kuma_data"
+uptime_kuma_caddy_data_volume: "caddy_data"
+uptime_kuma_caddy_config_volume: "caddy_config"
+
+# The non-root user that will be added to the `docker` group. Harden role
+# creates this user if enabled; otherwise the consumer must ensure it exists.
+deploy_user: "deploy"

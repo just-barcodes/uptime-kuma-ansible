@@ -1,0 +1,19 @@
+---
+profile: production
+
+exclude_paths:
+  - .github/
+  - collections/
+  - .cache/
+  - .ansible/
+  - .venv/
+
+# Uptime Kuma + Docker Compose rendering depends on `docker compose` shell
+# calls; keep `command-instead-of-module` quiet where it's intentional.
+skip_list:
+  - command-instead-of-module
+  # `deploy_user` is the documented cross-role convention (see CLAUDE.md),
+  # not a missing role prefix.
+  - var-naming[no-role-prefix]
+  # CHANGELOG dropped for now — collection is pre-1.0.
+  - galaxy[no-changelog]

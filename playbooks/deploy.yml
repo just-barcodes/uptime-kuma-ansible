@@ -1,0 +1,23 @@
+---
+# Reference playbook. Composes the three roles, gated by *_enabled booleans.
+#
+# Consumers typically invoke this via `import_playbook` from their own
+# site.yml:
+#
+#   - import_playbook: just_barcodes.uptime_kuma.deploy
+#     vars:
+#       uptime_kuma_domain: status.example.com
+#       uptime_kuma_letsencrypt_email: ops@example.com
+#
+# Override `uptime_kuma_hosts` to target a group other than `uptime_kuma`.
+
+- name: Deploy Uptime Kuma
+  hosts: "{{ uptime_kuma_hosts | default('uptime_kuma') }}"
+  become: true
+  gather_facts: true
+  roles:
+    - role: just_barcodes.uptime_kuma.harden
+      when: harden_enabled | default(false) | bool
+    - role: just_barcodes.uptime_kuma.tailscale
+      when: tailscale_enabled | default(false) | bool
+    - role: just_barcodes.uptime_kuma.uptime_kuma

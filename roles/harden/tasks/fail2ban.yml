@@ -1,0 +1,25 @@
+---
+- name: Configure fail2ban sshd jail
+  ansible.builtin.copy:
+    dest: /etc/fail2ban/jail.d/sshd.local
+    owner: root
+    group: root
+    mode: "0644"
+    content: |
+      [sshd]
+      enabled   = true
+      port      = {{ harden_ssh_port }}
+      maxretry  = {{ harden_fail2ban_maxretry }}
+      findtime  = {{ harden_fail2ban_findtime }}
+      bantime   = {{ harden_fail2ban_bantime }}
+      backend   = systemd
+      # Route bans through UFW so IPv6 is banned too (default
+      # iptables-multiport is IPv4-only on Debian).
+      banaction = ufw
+  notify: Restart fail2ban
+
+- name: Ensure fail2ban is enabled and running
+  ansible.builtin.systemd:
+    name: fail2ban
+    enabled: true
+    state: started

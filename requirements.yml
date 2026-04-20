@@ -1,0 +1,9 @@
+---
+# Pinned versions used by CI and recommended for consumers. Consumers who
+# want the absolute latest can relax these — but the ones below are what
+# this release was actually validated against.
+collections:
+  - name: community.general
+    version: "==12.5.0"
+  - name: ansible.posix
+    version: "==2.1.0"

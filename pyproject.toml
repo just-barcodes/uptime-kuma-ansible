@@ -1,0 +1,15 @@
+# Not a Python package — this file exists to pin the lint/test toolchain
+# (ansible-core, ansible-lint, yamllint) so local runs and CI use identical
+# versions. Manage with `uv`: see README "Local development".
+[project]
+name = "uptime-kuma-ansible-tooling"
+version = "0"
+description = "Tooling-only project file for the just_barcodes.uptime_kuma collection."
+requires-python = ">=3.11"
+
+[dependency-groups]
+dev = [
+  "ansible-core>=2.19",
+  "ansible-lint>=24.0",
+  "yamllint>=1.35",
+]

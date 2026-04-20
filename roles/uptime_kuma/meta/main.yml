@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Sam Rupprechter
+  description: Deploy Uptime Kuma behind Caddy (auto HTTPS) on Debian via Docker Compose.
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+  galaxy_tags:
+    - monitoring
+    - uptime
+    - kuma
+    - caddy
+    - docker
+dependencies: []

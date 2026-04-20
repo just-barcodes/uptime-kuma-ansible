@@ -1,0 +1,10 @@
+---
+# Stub inventory used by CI for `ansible-playbook --syntax-check` only.
+# Never executed against a real host.
+all:
+  children:
+    uptime_kuma:
+      hosts:
+        ci-stub:
+          ansible_host: 127.0.0.1
+          ansible_connection: local

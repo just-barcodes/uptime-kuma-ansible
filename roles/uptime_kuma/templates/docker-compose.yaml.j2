@@ -1,0 +1,44 @@
+---
+# Managed by Ansible — edits will be overwritten on next apply.
+
+services:
+  uptime-kuma:
+    image: {{ uptime_kuma_image }}
+    container_name: uptime-kuma
+    restart: unless-stopped
+    volumes:
+      - {{ uptime_kuma_data_volume }}:/app/data
+    # Not published on the host — Caddy reaches it over the internal network.
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD", "extra/healthcheck"]
+      interval: 60s
+      timeout: 30s
+      retries: 3
+
+  caddy:
+    image: {{ uptime_kuma_caddy_image }}
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - {{ uptime_kuma_caddy_data_volume }}:/data
+      - {{ uptime_kuma_caddy_config_volume }}:/config
+    networks:
+      - web
+    depends_on:
+      - uptime-kuma
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  {{ uptime_kuma_data_volume }}:
+  {{ uptime_kuma_caddy_data_volume }}:
+  {{ uptime_kuma_caddy_config_volume }}:

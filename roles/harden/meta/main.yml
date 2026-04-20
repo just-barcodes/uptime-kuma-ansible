@@ -1,0 +1,18 @@
+---
+galaxy_info:
+  author: Sam Rupprechter
+  description: Baseline Debian hardening — SSH, UFW, fail2ban, unattended-upgrades, sysctl, deploy user.
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+  galaxy_tags:
+    - security
+    - hardening
+    - ssh
+    - ufw
+    - fail2ban
+dependencies: []

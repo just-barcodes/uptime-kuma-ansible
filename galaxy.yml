@@ -1,0 +1,38 @@
+---
+namespace: just_barcodes
+name: uptime_kuma
+version: 0.1.0
+readme: README.md
+authors:
+  - Sam Rupprechter <sam.rupprechter@gmail.com>
+description: >-
+  Deploy Uptime Kuma behind Caddy (auto HTTPS) on a Debian host over SSH.
+  Optional roles bundle opinionated SSH/UFW/fail2ban hardening and Tailscale
+  enrolment with a public-SSH lockdown step.
+license:
+  - MIT
+tags:
+  - monitoring
+  - uptime
+  - kuma
+  - caddy
+  - docker
+  - tailscale
+  - debian
+dependencies:
+  # Upper bounds tracked against the versions CI validates. Bump when a new
+  # major is tested against the roles (especially anything that touches
+  # ansible.posix.authorized_key or community.general.ufw).
+  community.general: ">=8.0.0,<13.0.0"
+  ansible.posix: ">=1.5.0,<3.0.0"
+repository: https://github.com/just-barcodes/uptime-kuma-ansible
+issues: https://github.com/just-barcodes/uptime-kuma-ansible/issues
+build_ignore:
+  - .github
+  - .gitignore
+  - tests
+  - scripts
+  - Makefile
+  - pyproject.toml
+  - uv.lock
+  - requirements.yml

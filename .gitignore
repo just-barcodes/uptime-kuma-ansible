@@ -1,0 +1,19 @@
+*.retry
+.ansible/
+collections/
+*.tar.gz
+
+# Editor swap / temp files
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Python (in case of local venvs for linting)
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# uv
+.uv/

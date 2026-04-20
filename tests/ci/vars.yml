@@ -1,0 +1,12 @@
+---
+# Minimum required vars so `--syntax-check` can resolve role asserts.
+uptime_kuma_domain: status.example.com
+uptime_kuma_letsencrypt_email: ops@example.com
+
+harden_enabled: true
+harden_deploy_user_pubkey_file: /dev/null
+
+tailscale_enabled: true
+# Obviously-fake stub so secret scanners don't flag on the `tskey-` prefix.
+tailscale_authkey: "tskey-CI-STUB-NOT-REAL"
+tailscale_tags: "tag:ci"

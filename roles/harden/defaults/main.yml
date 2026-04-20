@@ -1,0 +1,36 @@
+---
+# Required (no default — fail if unset)
+# harden_deploy_user_pubkey_file: ~/.ssh/id_ed25519.pub
+
+# Hostname applied to the target. Defaults to Ansible's inventory_hostname.
+harden_hostname: "{{ inventory_hostname }}"
+
+# IANA timezone name (e.g. "Europe/Berlin", "America/New_York").
+harden_timezone: "UTC"
+
+# The non-root user created with passwordless sudo + authorized_key.
+# Shared with the uptime_kuma role's docker group membership.
+deploy_user: "deploy"
+
+# SSH
+harden_ssh_port: 22
+
+# fail2ban thresholds for sshd. maxretry matches sshd's MaxAuthTries (3) so
+# the ban triggers on the same attempt count the SSH server itself rejects at.
+harden_fail2ban_maxretry: 3
+harden_fail2ban_findtime: "10m"
+harden_fail2ban_bantime: "1h"
+
+# Public ingress ports (always open). Default is empty — consumer supplies
+# the ports they actually need open to the internet. See uptime_kuma:
+#   harden_public_allow_ports:
+#     - { port: "80",  proto: "tcp", comment: "HTTP (Caddy ACME + redirect)" }
+#     - { port: "443", proto: "tcp", comment: "HTTPS" }
+#     - { port: "443", proto: "udp", comment: "HTTP/3" }
+harden_public_allow_ports: []
+
+# During the first (bootstrap) run, public SSH is allowed so Ansible can reach
+# the host. The tailscale role's optional lockdown step closes it afterwards.
+# Set to false if SSH is already reachable via a VPN/bastion and you never
+# want a public port 22 rule, even transiently.
+harden_allow_public_ssh_during_bootstrap: true

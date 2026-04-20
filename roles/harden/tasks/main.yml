@@ -1,0 +1,55 @@
+---
+- name: Assert required variables are set
+  ansible.builtin.assert:
+    that:
+      - harden_deploy_user_pubkey_file is defined and harden_deploy_user_pubkey_file | length > 0
+    fail_msg: >-
+      harden_deploy_user_pubkey_file must point to a public key file on the
+      control node. This key is installed as the sole authorized key for
+      `{{ deploy_user }}`.
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ harden_hostname }}"
+
+- name: Set timezone
+  community.general.timezone:
+    name: "{{ harden_timezone }}"
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+    cache_valid_time: 3600
+
+- name: Install baseline packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+      - ufw
+      - fail2ban
+      - unattended-upgrades
+      - apt-listchanges
+      - needrestart
+      - python3-pip
+      - python3-debian
+    state: present
+
+- name: Create deploy user and install key
+  ansible.builtin.import_tasks: user.yml
+
+- name: Harden SSH
+  ansible.builtin.import_tasks: ssh.yml
+
+- name: Apply sysctl hardening
+  ansible.builtin.import_tasks: sysctl.yml
+
+- name: Configure firewall (base rules)
+  ansible.builtin.import_tasks: firewall.yml
+
+- name: Configure fail2ban
+  ansible.builtin.import_tasks: fail2ban.yml
+
+- name: Configure unattended-upgrades
+  ansible.builtin.import_tasks: unattended.yml

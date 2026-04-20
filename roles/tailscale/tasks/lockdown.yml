@@ -1,0 +1,49 @@
+---
+# Verifies Tailscale is healthy, then swaps the public SSH UFW rule for a
+# tailscale0-interface-only rule.
+#
+# Idempotent: on every subsequent run this is a no-op (rules already in place).
+#
+# This step requires UFW to be installed. In practice that means the `harden`
+# role should also be enabled in the playbook. Setting
+# `tailscale_lock_ssh_to_tailnet: true` without `harden_enabled: true` will
+# fail at the UFW tasks below — which is the right behaviour.
+
+- name: Re-check Tailscale backend state before lockdown
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_lockdown_status
+  changed_when: false
+  failed_when: tailscale_lockdown_status.rc != 0
+
+- name: Parse Tailscale status
+  ansible.builtin.set_fact:
+    tailscale_backend: "{{ (tailscale_lockdown_status.stdout | from_json).BackendState | default('') }}"
+    tailscale_online: "{{ (tailscale_lockdown_status.stdout | from_json).Self.Online | default(false) }}"
+
+- name: Abort lockdown if Tailscale is not fully up
+  ansible.builtin.fail:
+    msg: >-
+      Refusing to close public SSH — Tailscale is not healthy
+      (backend={{ tailscale_backend }}, online={{ tailscale_online }}).
+      Investigate before re-running.
+  when: tailscale_backend != 'Running' or not tailscale_online
+
+- name: Allow SSH only from the tailscale0 interface
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+    proto: tcp
+    port: "{{ tailscale_ssh_port }}"
+    comment: "SSH via Tailscale only"
+
+- name: Remove the public SSH allow rule
+  community.general.ufw:
+    delete: true
+    rule: allow
+    proto: tcp
+    port: "{{ tailscale_ssh_port }}"
+
+- name: Reload UFW
+  community.general.ufw:
+    state: reloaded

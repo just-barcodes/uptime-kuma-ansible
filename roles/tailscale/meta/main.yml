@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Sam Rupprechter
+  description: Install Tailscale, enrol with authkey + tags; optionally lock public SSH to the tailnet.
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+        - trixie
+  galaxy_tags:
+    - tailscale
+    - vpn
+    - networking
+dependencies: []

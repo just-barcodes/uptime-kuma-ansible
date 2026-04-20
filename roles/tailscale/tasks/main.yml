@@ -1,0 +1,78 @@
+---
+- name: Assert required variables are set
+  ansible.builtin.assert:
+    that:
+      - tailscale_authkey is defined and tailscale_authkey | length > 0
+    fail_msg: >-
+      tailscale_authkey must be set (typically via a sops-encrypted vault in
+      the consumer repo). See https://tailscale.com/kb/1085/auth-keys/.
+    no_log: true
+
+- name: Add Tailscale apt repo key
+  ansible.builtin.get_url:
+    url: "https://pkgs.tailscale.com/stable/debian/{{ tailscale_apt_release }}.noarmor.gpg"
+    dest: /usr/share/keyrings/tailscale-archive-keyring.gpg
+    mode: "0644"
+    # Defence in depth: HTTPS + pinned fingerprint. Tailscale uses the same
+    # key across Debian releases; bump when Tailscale rotates.
+    checksum: "sha256:3e03dacf222698c60b8e2f990b809ca1b3e104de127767864284e6c228f1fb39"
+
+- name: Add Tailscale apt repo
+  ansible.builtin.copy:
+    content: "deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/debian {{ tailscale_apt_release }} main\n"
+    dest: /etc/apt/sources.list.d/tailscale.list
+    mode: "0644"
+
+- name: Install Tailscale
+  ansible.builtin.apt:
+    name: tailscale
+    state: present
+    update_cache: true
+
+- name: Enable and start tailscaled
+  ansible.builtin.systemd:
+    name: tailscaled
+    enabled: true
+    state: started
+
+- name: Check Tailscale backend state
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+
+- name: Write Tailscale authkey to a file (keeps it out of /proc/<pid>/cmdline)
+  ansible.builtin.copy:
+    dest: /root/.tailscale-authkey
+    content: "{{ tailscale_authkey }}"
+    owner: root
+    group: root
+    mode: "0600"
+  when: (tailscale_status.stdout | from_json).BackendState | default('') != 'Running'
+  no_log: true
+
+- name: Bring Tailscale up
+  ansible.builtin.command: >-
+    tailscale up
+    --auth-key=file:/root/.tailscale-authkey
+    {{ tailscale_up_flags }}
+  when: (tailscale_status.stdout | from_json).BackendState | default('') != 'Running'
+  changed_when: true
+
+- name: Remove the authkey file
+  ansible.builtin.file:
+    path: /root/.tailscale-authkey
+    state: absent
+
+- name: Re-check Tailscale status
+  ansible.builtin.command: tailscale status --json
+  register: tailscale_status_post
+  changed_when: false
+
+- name: Show Tailscale IPv4
+  ansible.builtin.debug:
+    msg: "Tailscale IPv4: {{ (tailscale_status_post.stdout | from_json).Self.TailscaleIPs[0] | default('unknown') }}"
+
+- name: Lock SSH to tailnet0 (optional post-step)
+  ansible.builtin.import_tasks: lockdown.yml
+  when: tailscale_lock_ssh_to_tailnet | bool

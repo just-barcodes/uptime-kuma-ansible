@@ -1,0 +1,35 @@
+---
+# Base firewall rules. Public SSH on harden_ssh_port is opened during bootstrap
+# (unless harden_allow_public_ssh_during_bootstrap is false). The tailscale
+# role's optional lockdown step can replace it with a tailscale0-only rule.
+
+- name: Set UFW default incoming policy to deny
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+
+- name: Set UFW default outgoing policy to allow
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+
+- name: Allow consumer-specified public ingress ports
+  community.general.ufw:
+    rule: allow
+    proto: "{{ item.proto }}"
+    port: "{{ item.port }}"
+    comment: "{{ item.comment | default(omit) }}"
+  loop: "{{ harden_public_allow_ports }}"
+
+- name: Allow public SSH during bootstrap
+  community.general.ufw:
+    rule: allow
+    proto: tcp
+    port: "{{ harden_ssh_port }}"
+    comment: "Bootstrap SSH — may be replaced by a tailscale-only rule"
+  when: harden_allow_public_ssh_during_bootstrap | bool
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+    logging: low

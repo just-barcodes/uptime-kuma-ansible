@@ -1,0 +1,22 @@
+---
+- name: Deploy hardened sshd_config
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: "0644"
+    validate: "sshd -t -f %s"
+  notify: Restart sshd
+
+- name: Remove any sshd drop-in that would weaken settings
+  ansible.builtin.file:
+    path: "/etc/ssh/sshd_config.d/50-cloud-init.conf"
+    state: absent
+  notify: Restart sshd
+
+- name: Ensure sshd is enabled
+  ansible.builtin.systemd:
+    name: ssh
+    enabled: true
+    state: started
