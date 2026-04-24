@@ -2,7 +2,7 @@
 
 Ansible Collection that deploys [Uptime Kuma](https://github.com/louislam/uptime-kuma)
 behind [Caddy](https://caddyserver.com/) (automatic HTTPS via Let's Encrypt) on
-a Debian host over SSH. Optional roles bundle opinionated SSH/UFW/fail2ban
+any Debian host over SSH. Optional roles bundle opinionated SSH/UFW/fail2ban
 hardening and Tailscale enrolment with a public-SSH lockdown step.
 
 - **Scope**: one Uptime Kuma instance per host, Debian-only, Caddy as reverse
@@ -25,8 +25,7 @@ The reference playbook `just_barcodes.uptime_kuma.deploy` will do the rest: inst
 ## Quick start
 
 ```yaml
-# requirements.yml — pin versions (any compromised release of community.general
-# or ansible.posix lands inside your `become: true` Ansible run).
+# requirements.yml
 collections:
   - name: just_barcodes.uptime_kuma
     source: https://github.com/just-barcodes/uptime-kuma-ansible
@@ -102,7 +101,7 @@ UI. They persist in the `kuma_data` volume across re-runs of the playbook.
 
 `harden_enabled: true` opens port 22 to the public internet during bootstrap
 (`harden_allow_public_ssh_during_bootstrap: true` by default). The only thing
-that ever *closes* that rule is the `tailscale` role's optional lockdown step
+that ever _closes_ that rule is the `tailscale` role's optional lockdown step
 (`tailscale_enabled: true` + `tailscale_lock_ssh_to_tailnet: true`). If you
 deploy `harden_enabled: true` without Tailscale, public SSH remains open for
 the lifetime of the host — still key-only and fail2ban-protected, but
@@ -147,4 +146,3 @@ collection into `.ansible/collections/` so Ansible can resolve it by its FQCN
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
-
