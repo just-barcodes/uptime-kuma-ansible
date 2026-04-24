@@ -29,9 +29,7 @@ my-uptime/
 
 ```yaml
 ---
-# Pin versions — any compromised release of community.general / ansible.posix
-# lands inside your `become: true` Ansible run. The versions below are what
-# this collection validates against in CI.
+# Pin versions
 collections:
   - name: just_barcodes.uptime_kuma
     source: https://github.com/just-barcodes/uptime-kuma-ansible
@@ -93,7 +91,7 @@ fail2ban, unattended-upgrades, a deploy user):
     harden_deploy_user_pubkey_file: ~/.ssh/id_ed25519.pub
     harden_timezone: Europe/Berlin
     harden_public_allow_ports:
-      - { port: "80",  proto: "tcp", comment: "HTTP (Caddy ACME + redirect)" }
+      - { port: "80", proto: "tcp", comment: "HTTP (Caddy ACME + redirect)" }
       - { port: "443", proto: "tcp", comment: "HTTPS" }
       - { port: "443", proto: "udp", comment: "HTTP/3 (QUIC)" }
 ```
@@ -119,12 +117,12 @@ Enable the `tailscale` role and the optional lockdown step:
     harden_enabled: true
     harden_deploy_user_pubkey_file: ~/.ssh/id_ed25519.pub
     harden_public_allow_ports:
-      - { port: "80",  proto: "tcp", comment: "HTTP" }
+      - { port: "80", proto: "tcp", comment: "HTTP" }
       - { port: "443", proto: "tcp", comment: "HTTPS" }
       - { port: "443", proto: "udp", comment: "HTTP/3" }
 
     tailscale_enabled: true
-    tailscale_authkey: "{{ lookup('env', 'TS_AUTHKEY') }}"   # or sops-encrypted
+    tailscale_authkey: "{{ lookup('env', 'TS_AUTHKEY') }}" # or sops-encrypted
     tailscale_tags: "tag:uptime"
     tailscale_lock_ssh_to_tailnet: true
 ```
@@ -138,7 +136,7 @@ After the first run, port 22 is closed on the public internet and future
 Ansible runs must go via Tailscale. Update `inventory.yml`:
 
 ```yaml
-ansible_host: my-uptime-box.tailXXXXX.ts.net   # MagicDNS name from admin console
+ansible_host: my-uptime-box.tailXXXXX.ts.net # MagicDNS name from admin console
 ```
 
 ## Two-phase bootstrap pattern
@@ -173,3 +171,4 @@ never end up locked out — but if it happens, use your provider's web console
 `ssh deploy@host 'docker logs uptime-kuma'`. Kuma writes its SQLite DB to
 the `kuma_data` Docker volume on first-run completion; if the volume was
 recreated, setup restarts.
+
