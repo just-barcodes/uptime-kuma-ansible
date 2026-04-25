@@ -1,14 +1,6 @@
 ---
-- name: Assert required variables are set
-  ansible.builtin.assert:
-    that:
-      - uptime_kuma_domain is defined and uptime_kuma_domain | length > 0
-      - uptime_kuma_letsencrypt_email is defined and uptime_kuma_letsencrypt_email | length > 0
-    fail_msg: >-
-      uptime_kuma_domain and uptime_kuma_letsencrypt_email must both be set
-      (see roles/uptime_kuma/defaults/main.yml for the full variable list).
-  tags:
-    - preflight
+- name: Run preflight checks
+  ansible.builtin.import_tasks: preflight.yml
 
 - name: Install Docker apt prerequisites
   ansible.builtin.apt:
