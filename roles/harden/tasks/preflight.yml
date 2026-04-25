@@ -1,0 +1,11 @@
+---
+- name: Assert required variables are set
+  ansible.builtin.assert:
+    that:
+      - harden_deploy_user_pubkey_file is defined and harden_deploy_user_pubkey_file | length > 0
+    fail_msg: >-
+      harden_deploy_user_pubkey_file must point to a public key file on the
+      control node. This key is installed as the sole authorized key for
+      `{{ deploy_user }}`.
+  tags:
+    - preflight

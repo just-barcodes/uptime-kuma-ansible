@@ -1,0 +1,21 @@
+---
+- name: Runtime-check role preflight asserts
+  hosts: "{{ uptime_kuma_hosts | default('uptime_kuma') }}"
+  gather_facts: false
+  tasks:
+    - name: Import harden role
+      ansible.builtin.import_role:
+        name: just_barcodes.uptime_kuma.harden
+        tasks_from: preflight.yml
+      when: harden_enabled | default(false) | bool
+
+    - name: Import tailscale role
+      ansible.builtin.import_role:
+        name: just_barcodes.uptime_kuma.tailscale
+        tasks_from: preflight.yml
+      when: tailscale_enabled | default(false) | bool
+
+    - name: Import uptime_kuma role
+      ansible.builtin.import_role:
+        name: just_barcodes.uptime_kuma.uptime_kuma
+        tasks_from: preflight.yml

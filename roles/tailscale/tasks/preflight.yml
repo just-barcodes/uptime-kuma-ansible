@@ -1,0 +1,11 @@
+---
+- name: Assert required variables are set
+  ansible.builtin.assert:
+    that:
+      - tailscale_authkey is defined and tailscale_authkey | length > 0
+    fail_msg: >-
+      tailscale_authkey must be set (typically via a sops-encrypted vault in
+      the consumer repo). See https://tailscale.com/kb/1085/auth-keys/.
+  tags:
+    - preflight
+  no_log: true
