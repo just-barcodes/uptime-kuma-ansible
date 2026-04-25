@@ -7,6 +7,9 @@ name: CI
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+
 env:
   # Where we install collection deps + symlink this collection so the playbook
   # can resolve `just_barcodes.uptime_kuma.*` roles by FQCN.
