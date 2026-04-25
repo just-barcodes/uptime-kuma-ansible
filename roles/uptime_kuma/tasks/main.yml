@@ -7,6 +7,8 @@
     fail_msg: >-
       uptime_kuma_domain and uptime_kuma_letsencrypt_email must both be set
       (see roles/uptime_kuma/defaults/main.yml for the full variable list).
+  tags:
+    - preflight
 
 - name: Install Docker apt prerequisites
   ansible.builtin.apt:

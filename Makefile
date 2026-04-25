@@ -7,7 +7,7 @@ ANSIBLE_ENV      := ANSIBLE_COLLECTIONS_PATH=$(COLLECTIONS_PATH)
 
 .DEFAULT_GOAL := help
 
-.PHONY: help sync deps lint yamllint ansible-lint syntax-check \
+.PHONY: help sync deps lint yamllint ansible-lint syntax-check preflight-check \
         build install-built test clean
 
 help: ## Show this help
@@ -38,6 +38,10 @@ syntax-check: sync deps ## Syntax-check the reference playbook against the stub 
 	$(ANSIBLE_ENV) uv run ansible-playbook --syntax-check \
 		-i tests/ci/inventory.yml -e @tests/ci/vars.yml playbooks/deploy.yml
 
+preflight-check: sync deps ## Run tagged preflight asserts in check mode to catch runtime arg validation bugs
+	$(ANSIBLE_ENV) uv run ansible-playbook --check \
+		-i tests/ci/inventory.yml -e @tests/ci/vars.yml tests/ci/preflight-check.yml
+
 build: sync ## Build the collection tarball into dist/
 	uv run ansible-galaxy collection build --force --output-path dist/
 
@@ -50,7 +54,7 @@ install-built: build ## Install the built tarball to /tmp/installed-collections 
 		--syntax-check -i tests/ci/inventory.yml -e @tests/ci/vars.yml \
 		/tmp/installed-collections/ansible_collections/just_barcodes/uptime_kuma/playbooks/deploy.yml
 
-test: lint syntax-check install-built ## Full local CI: lint + syntax + tarball install
+test: lint syntax-check preflight-check install-built ## Full local CI: lint + syntax + preflight + tarball install
 
 clean: ## Remove build artifacts and the local collections cache
 	rm -rf dist/ .ansible/ /tmp/installed-collections

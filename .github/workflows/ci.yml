@@ -46,7 +46,7 @@ jobs:
         run: uv run ansible-lint
 
   syntax-check:
-    name: Syntax check (ansible-core ${{ matrix.ansible }})
+    name: Syntax + preflight check (ansible-core ${{ matrix.ansible }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -83,6 +83,13 @@ jobs:
             -i tests/ci/inventory.yml \
             -e @tests/ci/vars.yml \
             playbooks/deploy.yml
+
+      - name: ansible-playbook --check preflight-check.yml
+        run: |
+          uv run ansible-playbook --check \
+            -i tests/ci/inventory.yml \
+            -e @tests/ci/vars.yml \
+            tests/ci/preflight-check.yml
 
   build:
     name: Build + install tarball

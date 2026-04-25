@@ -7,6 +7,8 @@
       harden_deploy_user_pubkey_file must point to a public key file on the
       control node. This key is installed as the sole authorized key for
       `{{ deploy_user }}`.
+  tags:
+    - preflight
 
 - name: Set hostname
   ansible.builtin.hostname:

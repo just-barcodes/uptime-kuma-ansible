@@ -133,8 +133,9 @@ A `Makefile` wraps the common commands so local runs match CI exactly:
 make help            # list all targets
 make lint            # yamllint + ansible-lint
 make syntax-check    # ansible-playbook --syntax-check on the reference playbook
+make preflight-check # tagged assert tasks in --check mode to catch runtime arg validation bugs
 make build           # build the collection tarball into dist/
-make test            # full local CI: lint + syntax + tarball install
+make test            # full local CI: lint + syntax + preflight + tarball install
 make clean           # remove build artifacts and the local collections cache
 ```
 

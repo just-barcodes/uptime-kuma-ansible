@@ -6,7 +6,9 @@
     fail_msg: >-
       tailscale_authkey must be set (typically via a sops-encrypted vault in
       the consumer repo). See https://tailscale.com/kb/1085/auth-keys/.
-    no_log: true
+  tags:
+    - preflight
+  no_log: true
 
 - name: Add Tailscale apt repo key
   ansible.builtin.get_url:
