@@ -9,7 +9,11 @@ updates:
     directory: "/"
     schedule:
       interval: "monthly"
+    assignees:
+      - "just-barcodes"
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "monthly"
+    assignees:
+      - "just-barcodes"
